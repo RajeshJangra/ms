@@ -3,6 +3,7 @@ package com.thoughtworks.cart.controller;
 import com.thoughtworks.cart.entity.Cart;
 import com.thoughtworks.cart.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,10 +16,18 @@ public class CartController {
   @Autowired
   private CartService service;
 
-  @GetMapping(value = "/{id}")
-  ResponseEntity<Cart> getCartById(@PathVariable long id) {
-    return new ResponseEntity<>(service.getCartById(id), OK);
+  @Value("${message:Hello default}")
+  private String message;
+
+  @GetMapping
+  ResponseEntity<String> getMEssage() {
+    return new ResponseEntity<>(message, OK);
   }
+
+//  @GetMapping(value = "/{id}")
+//  ResponseEntity<Cart> getCartById(@PathVariable long id) {
+//    return new ResponseEntity<>(service.getCartById(id), OK);
+//  }
 
   @GetMapping
   ResponseEntity<Iterable<Cart>> getAllCarts() {
