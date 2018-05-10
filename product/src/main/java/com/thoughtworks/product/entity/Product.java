@@ -22,17 +22,17 @@ public class Product {
   @Size(max = 100)
   @Column(nullable = false)
   private String name;
-  @ApiModelProperty(value = "Product's productDescription", required = true)
+  @ApiModelProperty(value = "Product's description", required = true)
   @Size(max = 300)
   @Column(nullable = false)
-  private String productDescription;
+  private String description;
 
   public Product() {
   }
 
-  public Product(@Size(max = 100) final String name, @Size(max = 300) final String productDescription) {
+  public Product(@Size(max = 100) final String name, @Size(max = 300) final String description) {
     this.name = name;
-    this.productDescription = productDescription;
+    this.description = description;
   }
 
   public long getId() {
@@ -43,8 +43,8 @@ public class Product {
     return name;
   }
 
-  public String getProductDescription() {
-    return productDescription;
+  public String getDescription() {
+    return description;
   }
 
 
@@ -55,7 +55,7 @@ public class Product {
     final Product product = (Product) o;
     return id == product.id &&
       Objects.equals(name, product.name) &&
-      Objects.equals(productDescription, product.productDescription);
+      Objects.equals(description, product.description);
   }
 
   @Override
@@ -69,14 +69,14 @@ public class Product {
     final StringBuilder sb = new StringBuilder("Product{");
     sb.append("id=").append(id);
     sb.append(", name='").append(name).append('\'');
-    sb.append(", productDescription='").append(productDescription).append('\'');
+    sb.append(", description='").append(description).append('\'');
     sb.append('}');
     return sb.toString();
   }
 
   public Product update(final Product product) {
     this.name = product.name;
-    this.productDescription = product.productDescription;
+    this.description = product.description;
     return this;
   }
 }

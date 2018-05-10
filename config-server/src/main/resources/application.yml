@@ -1,0 +1,20 @@
+spring:
+    profiles:
+        active: native
+    cloud:
+        config:
+            server:
+                native:
+                    searchLocations: classpath:config/
+server:
+  port: 8888
+
+
+endpoints:
+    restart:
+      enabled: true
+
+#management:
+#    endpoints:
+#        web:
+#            expose: *

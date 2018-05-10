@@ -28,6 +28,9 @@ public class CartService {
   @Autowired
   private RestUtil restUtil;
 
+  @Value("${max.count}")
+  private int maxCount;
+
   public Cart getCartById(long id) {
     return repository
       .findById(id)
@@ -46,7 +49,11 @@ public class CartService {
     final Set<OrderItem> orderItems = new HashSet<>();
 
     cart.getOrderItems().forEach(orderItem -> {
-      if (getInventory(orderItem.getProductId()).getCount() > orderItem.getCount()) {
+      if (orderItem.getCount() > maxCount) {
+        final String message = "\n\norderItem = " + orderItem.getProductId() + " count: " + orderItem.getCount() + " is greater than max count";
+        System.out.println(message);
+        throw new RuntimeException(message);
+      } else if (getInventory(orderItem.getProductId()).getCount() > orderItem.getCount()) {
         orderItems.add(orderItem);
       }
     });
