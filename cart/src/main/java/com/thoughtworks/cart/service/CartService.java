@@ -4,7 +4,7 @@ import com.thoughtworks.cart.dto.InventoryDto;
 import com.thoughtworks.cart.entity.Cart;
 import com.thoughtworks.cart.entity.OrderItem;
 import com.thoughtworks.cart.repository.CartRepository;
-import com.thoughtworks.cart.util.RestUtil;
+import com.thoughtworks.cart.util.ProductServiceProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static java.lang.System.out;
 
 @Service
 public class CartService {
@@ -26,15 +25,15 @@ public class CartService {
   @Autowired
   private OrderItemService orderItemService;
   @Autowired
-  private RestUtil restUtil;
+  private ProductServiceProxy productServiceProxy;
 
   @Value("${max.count}")
   private int maxCount;
 
   public Cart getCartById(long id) {
     return repository
-      .findById(id)
-      .orElseThrow(() -> new EntityNotFoundException(format("Cart: %d does not exist", id)));
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException(format("Cart: %d does not exist", id)));
   }
 
   public Iterable<Cart> getAllCarts() {
@@ -50,9 +49,7 @@ public class CartService {
 
     cart.getOrderItems().forEach(orderItem -> {
       if (orderItem.getCount() > maxCount) {
-        final String message = "\n\norderItem = " + orderItem.getProductId() + " count: " + orderItem.getCount() + " is greater than max count";
-        System.out.println(message);
-        throw new RuntimeException(message);
+        throw new RuntimeException(format("orderItem = %d count: %d is greater than max count", orderItem.getProductId(), orderItem.getCount()));
       } else if (getInventory(orderItem.getProductId()).getCount() > orderItem.getCount()) {
         orderItems.add(orderItem);
       }
@@ -68,9 +65,8 @@ public class CartService {
   }
 
   private InventoryDto getInventory(long productId) {
-    InventoryDto inventoryDto = restUtil.get("http://localhost:2222/inventory/product/" + productId, InventoryDto.class);
-    out.println("inventoryDto = " + inventoryDto);
-    return inventoryDto;
+//    return restUtil.get("http://localhost:2222/inventory/product/" + productId, InventoryDto.class);
+    return productServiceProxy.getProductById(productId);
   }
 
   public String deleteCart(int id) {
@@ -84,8 +80,4 @@ public class CartService {
   }
 }
 
-//  final long inventoryCount = getInventory(orderItem.getProductId()).getCount();
-//  final long orderItemCount = orderItem.getCount();
-//      if (inventoryCount < orderItemCount) {
-//  System.out.println(format("Inventory has %d items but requested %d ", inventoryCount, orderItemCount));
-//  }
+

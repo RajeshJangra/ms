@@ -22,7 +22,6 @@ public class InventoryController {
 
   @GetMapping(value = "/product/{productId}")
   ResponseEntity<Inventory> getInventoryByProductId(@PathVariable Long productId) {
-    System.out.println("\nproductId = " + productId);
     return new ResponseEntity<>(service.getInventoryByProductId(productId), OK);
   }
 
