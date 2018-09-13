@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-@FeignClient("http://product-service")
+@FeignClient(name = "product-service", url = "http://product-service", fallback = ProductServiceFallback.class)
 @Component
 public interface ProductServiceProxy {
 

@@ -1,7 +1,10 @@
 package com.thoughtworks.product.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.thoughtworks.product.entity.Inventory;
 import com.thoughtworks.product.repository.InventoryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,15 +26,25 @@ public class InventoryService {
   @Value("${max.inventory}")
   private int maxInventory;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(InventoryService.class);
+
+  @HystrixCommand(fallbackMethod = "emptyInventory")
   public Inventory getInventoryByProductId(long productId) {
     return repository.findInventoryByProduct(productService.getProductById(productId))
-      .orElseThrow(() -> new EntityNotFoundException(format("Inventory does not exist for Product: %d", productId)));
+        .orElseThrow(() -> new EntityNotFoundException(format("Inventory does not exist for Product: %d", productId)));
+  }
+
+  public Inventory emptyInventory(long productId) {
+    String message = format("\nHystrix command: Inventory does not exist for Product: %d", productId);
+    LOGGER.error(message);
+    System.out.println("message = " + message);
+    throw new EntityNotFoundException(message);
   }
 
   public Inventory getInventoryById(long id) {
     return repository
-      .findById(id)
-      .orElseThrow(() -> new EntityNotFoundException(format("Inventory: %d does not exist", id)));
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException(format("Inventory: %d does not exist", id)));
   }
 
   public Iterable<Inventory> getAllInventory() {
